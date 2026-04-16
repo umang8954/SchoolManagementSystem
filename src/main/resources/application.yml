@@ -4,14 +4,13 @@ spring:
   
   # Database Configuration - Azure SQL Server
   datasource:
-    url: jdbc:sqlserver://school-mgmt-sql-server.database.windows.net:1433;database=school_system;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
-    username: 0241mca249@niet.co.in
+    url: jdbc:sqlserver://school-mgmt-sql-server.database.windows.net:1433;database=school_system;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryMSI;
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   
   jpa:
     hibernate:
       ddl-auto: update
-    database-platform: org.hibernate.dialect.SQLServer2019Dialect
+    database-platform: org.hibernate.dialect.SQLServerDialect
     show-sql: false
 
 server:
