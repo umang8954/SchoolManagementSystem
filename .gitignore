@@ -1,0 +1,58 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.odl
+.flattened-pom.xml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+
+# Build
+*.class
+*.jar
+*.war
+*.rar
+
+# Database
+*.db
+*.sqlite
+*.h2.db
+
+# Logs
+logs/
+*.log
+log-file.txt
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Project specific
+.classpath
+.project
+.settings/
+*.avi
+*.mov
