@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE = 'http://localhost:8080/api';
+const API_BASE = 'https://school-mgmt-api.azurewebsites.net/api';
 
 // State Management
 const state = {

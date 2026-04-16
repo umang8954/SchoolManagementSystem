@@ -2,17 +2,16 @@ spring:
   application:
     name: school-management-system
   
-  # Database Configuration - MySQL
+  # Database Configuration - Azure SQL Server
   datasource:
-    url: jdbc:mysql://localhost:3306/school_system?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password: Root123
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:sqlserver://school-mgmt-sql-server.database.windows.net:1433;database=school_system;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    username: 0241mca249@niet.co.in
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   
   jpa:
     hibernate:
       ddl-auto: update
-    database-platform: org.hibernate.dialect.MySQL8Dialect
+    database-platform: org.hibernate.dialect.SQLServer2019Dialect
     show-sql: false
 
 server:
