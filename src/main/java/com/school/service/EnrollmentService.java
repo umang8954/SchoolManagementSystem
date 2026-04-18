@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @Transactional
+@SuppressWarnings("null")
 public class EnrollmentService {
     
     private final EnrollmentRepository enrollmentRepository;
