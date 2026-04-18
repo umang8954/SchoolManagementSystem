@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @Transactional
+@SuppressWarnings("null")
 public class StudentService {
     
     private final StudentRepository studentRepository;
