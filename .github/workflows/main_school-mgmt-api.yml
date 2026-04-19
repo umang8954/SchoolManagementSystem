@@ -126,6 +126,12 @@ jobs:
           name: frontend-dist
           path: frontend-dist
 
+      - name: Inspect frontend artifact structure
+        if: ${{ steps.frontend-config.outputs.skip_deploy != 'true' }}
+        run: |
+          ls -la frontend-dist || true
+          ls -la frontend-dist/dist || true
+
       - name: Login to Azure
         if: ${{ steps.frontend-config.outputs.skip_deploy != 'true' }}
         uses: azure/login@v2
@@ -137,8 +143,15 @@ jobs:
       - name: Deploy frontend to Azure Web App
         if: ${{ steps.frontend-config.outputs.skip_deploy != 'true' }}
         run: |
-          cd frontend-dist
-          zip -r ../frontend.zip .
+          if [ -f frontend-dist/index.html ]; then
+            cd frontend-dist
+          elif [ -f frontend-dist/dist/index.html ]; then
+            cd frontend-dist/dist
+          else
+            echo "Could not find index.html in frontend artifact"
+            exit 1
+          fi
+          zip -r ../../../frontend.zip .
 
       - name: Deploy frontend package to Azure Web App
         if: ${{ steps.frontend-config.outputs.skip_deploy != 'true' }}
