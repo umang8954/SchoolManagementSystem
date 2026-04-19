@@ -140,9 +140,11 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Deploy frontend to Azure Web App
+      - name: Create frontend deployment package
         if: ${{ steps.frontend-config.outputs.skip_deploy != 'true' }}
         run: |
+          FRONTEND_ZIP="$GITHUB_WORKSPACE/frontend.zip"
+          rm -f "$FRONTEND_ZIP"
           if [ -f frontend-dist/index.html ]; then
             cd frontend-dist
           elif [ -f frontend-dist/dist/index.html ]; then
@@ -151,7 +153,8 @@ jobs:
             echo "Could not find index.html in frontend artifact"
             exit 1
           fi
-          zip -r ../../../frontend.zip .
+          zip -r "$FRONTEND_ZIP" .
+          ls -la "$FRONTEND_ZIP"
 
       - name: Deploy frontend package to Azure Web App
         if: ${{ steps.frontend-config.outputs.skip_deploy != 'true' }}
@@ -159,7 +162,7 @@ jobs:
         with:
           app-name: ${{ env.FRONTEND_APP_NAME }}
           slot-name: 'Production'
-          package: frontend.zip
+          package: ${{ github.workspace }}/frontend.zip
 
   post-deploy-healthcheck:
     runs-on: ubuntu-latest
