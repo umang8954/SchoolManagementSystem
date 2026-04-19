@@ -109,6 +109,8 @@ jobs:
       FRONTEND_APP_NAME: ${{ secrets.AZURE_FRONTEND_APP_NAME }}
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Check frontend app configuration
         id: frontend-config
         run: |
@@ -119,18 +121,25 @@ jobs:
             echo "skip_deploy=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Download frontend artifact
+      - name: Set up Node.js
         if: ${{ steps.frontend-config.outputs.skip_deploy != 'true' }}
-        uses: actions/download-artifact@v4
+        uses: actions/setup-node@v4
         with:
-          name: frontend-dist
-          path: frontend-dist
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Inspect frontend artifact structure
+      - name: Build frontend for deployment
+        if: ${{ steps.frontend-config.outputs.skip_deploy != 'true' }}
+        working-directory: ui/react-app
+        run: |
+          npm install
+          npm run build
+          ls -la dist
+
+      - name: Verify frontend build output
         if: ${{ steps.frontend-config.outputs.skip_deploy != 'true' }}
         run: |
-          ls -la frontend-dist || true
-          ls -la frontend-dist/dist || true
+          test -f ui/react-app/dist/index.html
+          echo "Found frontend entry file: ui/react-app/dist/index.html"
 
       - name: Login to Azure
         if: ${{ steps.frontend-config.outputs.skip_deploy != 'true' }}
@@ -140,29 +149,13 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Create frontend deployment package
-        if: ${{ steps.frontend-config.outputs.skip_deploy != 'true' }}
-        run: |
-          FRONTEND_ZIP="$GITHUB_WORKSPACE/frontend.zip"
-          rm -f "$FRONTEND_ZIP"
-          if [ -f frontend-dist/index.html ]; then
-            cd frontend-dist
-          elif [ -f frontend-dist/dist/index.html ]; then
-            cd frontend-dist/dist
-          else
-            echo "Could not find index.html in frontend artifact"
-            exit 1
-          fi
-          zip -r "$FRONTEND_ZIP" .
-          ls -la "$FRONTEND_ZIP"
-
-      - name: Deploy frontend package to Azure Web App
+      - name: Deploy frontend dist to Azure Web App
         if: ${{ steps.frontend-config.outputs.skip_deploy != 'true' }}
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.FRONTEND_APP_NAME }}
           slot-name: 'Production'
-          package: ${{ github.workspace }}/frontend.zip
+          package: ui/react-app/dist
 
   post-deploy-healthcheck:
     runs-on: ubuntu-latest
