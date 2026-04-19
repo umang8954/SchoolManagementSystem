@@ -22,6 +22,11 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/courses")
+@CrossOrigin(origins = {
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://school-management-ui.azurewebsites.net"
+})
 @Slf4j
 @Tag(name = "Course Management", description = "APIs for managing courses")
 public class CourseController {
