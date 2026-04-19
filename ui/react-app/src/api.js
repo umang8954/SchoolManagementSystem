@@ -1,18 +1,32 @@
-// Point to local backend during development.
-// When deploying to Azure, change this to your App Service URL.
-const API_BASE = '/api';
+// Use relative API path locally, and explicit backend host in production.
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL ||
+  (typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? '/api'
+    : 'https://school-ops-api.azurewebsites.net/api');
 
 async function request(url, options = {}) {
   const res = await fetch(url, {
     headers: { 'Content-Type': 'application/json' },
     ...options,
   });
+
+  const contentType = res.headers.get('content-type') || '';
+
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
+    const err = contentType.includes('application/json')
+      ? await res.json().catch(() => ({}))
+      : {};
     throw new Error(err.message || `Request failed: ${res.status}`);
   }
+
   // DELETE returns 204 No Content
   if (res.status === 204) return null;
+
+  if (!contentType.includes('application/json')) {
+    throw new Error('API did not return JSON. Check API base URL configuration.');
+  }
+
   return res.json();
 }
 
